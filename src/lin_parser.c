@@ -2,6 +2,19 @@
 
 static uint8_t lin_bit_parity(uint8_t);
 
+static LINFrameHandler lin_handler = NULL;
+
+static LINErrorHandler lin_errhandler = NULL;
+
+void lin_set_handler(LINFrameHandler handler) {
+	lin_handler = handler;
+}
+
+void lin_set_errhandler(LINErrorHandler handler) {
+	lin_errhandler = handler;
+}
+
+
 LINStatus lin_chk_sync(uint8_t sync) {
 	if (sync == LIN_SYNC_BYTE)
 		return LIN_OK;
@@ -55,7 +68,7 @@ LINStatus lin_val_chksum(const LinFrame *frame) {
 LINStatus lin_parse_frame(const uint8_t *raw, LINFrame *out) {
 	if (raw == NULL || out == NULL) return LIN_FORMAT_ERR;
 
-	if (lin_chk_sync(raw[0]) != LIN_OK)
+	if (lin_chk_sync(raw[0]) != LIN_OK && lin_errhandler)
 		return LIN_SYNC_ERR;
 
 	out->pid = raw[1];
@@ -71,6 +84,9 @@ LINStatus lin_parse_frame(const uint8_t *raw, LINFrame *out) {
 
 	if (lin_val_chksum(out) != LIN_OK) 
 		return LIN_CHKSUM_ERR;
+
+	if (lin_handler != NULL)
+		lin_handler(out);
 
 	return LIN_OK;
 }

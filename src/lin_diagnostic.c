@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include "lin_diagnostic.h"
 
@@ -7,7 +8,7 @@
 
 static uint8_t counter = 100;
 
-static void diagnostic_handler(const LINFrame *frame) {
+void lin_diagnostic_handler(const LINFrame *frame) {
 	uint8_t cmd = frame->data[0];
 
 	switch (cmd) {
@@ -18,7 +19,7 @@ static void diagnostic_handler(const LINFrame *frame) {
 			break;
 		case LIN_CMD_UPDATE:
 			printf("--- DIAGNOSTIC ---\n");
-			counter = frame->data[2];
+			counter = frame->data[1];
 			printf("value of counter updated: %d\n", counter);
 			printf("------------------\n");
 			break;
@@ -35,8 +36,4 @@ static void diagnostic_handler(const LINFrame *frame) {
 			printf("unknown command: 0x%02X\n", cmd);
 			printf("------------------\n");
 	}
-}
-
-void lin_set_diagnostic_handler() {
-	lin_set_handler(lin_diagnostic_handler);
 }

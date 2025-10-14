@@ -1,5 +1,6 @@
 #ifndef LIN_H
 #define LIN_H
+#include <stdint.h>
 
 #define LIN_SYNC_BYTE 0x55
 #define LIN_MAX_DATA 8
@@ -11,6 +12,7 @@ typedef enum {
 	LIN_SYNC_ERR,
 	LIN_PID_ERR,
 	LIN_CHKSUM_ERR,
+	LIN_FORMAT_ERR,
 } LINStatus;
 
 typedef struct {

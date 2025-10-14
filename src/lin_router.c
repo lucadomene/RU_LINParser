@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "lin.h"
+#include "lin_router.h"
 
 static void lin_print_frame(const LINFrame *frame) {
 	printf("Received PID = 0x%02X\n", frame->pid);

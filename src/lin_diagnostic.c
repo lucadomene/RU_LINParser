@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "lin_diagnostic.h"
 
 // LIN_CMD_READ 0x01
@@ -34,4 +35,8 @@ static void diagnostic_handler(const LINFrame *frame) {
 			printf("unknown command: 0x%02X\n", cmd);
 			printf("------------------\n");
 	}
+}
+
+void lin_set_diagnostic_handler() {
+	lin_set_handler(lin_diagnostic_handler);
 }

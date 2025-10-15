@@ -26,6 +26,8 @@ typedef void (*LINErrorHandler)(const uint8_t *raw, LINStatus status);
 
 LINStatus lin_chk_sync(uint8_t sync_byte);
 
+uint8_t lin_pid_addparity(uint8_t pid);
+
 LINStatus lin_val_pid(uint8_t pid);
 
 uint8_t lin_chksum(const uint8_t *data, uint8_t pid);

@@ -21,7 +21,7 @@ LINStatus lin_chk_sync(uint8_t sync) {
 	else return LIN_SYNC_ERR;
 }
 
-static uint8_t lin_pid_addparity(uint8_t pid) {
+uint8_t lin_pid_addparity(uint8_t pid) {
 	uint8_t id = pid & 0x3F; // mask id with 0b0011111
 	
 	// p0 = id0 ^ id1 ^ id2 ^ id4

@@ -18,6 +18,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	// initialize FIFO pipe
 	int fd = lin_init_fifo();
 	if (fd == -1) {
 		fprintf(stderr, "error opening FIFO\n");
@@ -27,6 +28,7 @@ int main(int argc, char* argv[]) {
 	uint8_t id;
 	uint8_t data[LIN_MAX_DATA];
 
+	// read each command line argument and parse it as a single byte hex value
 	if (sscanf(argv[1], "%hhx", &id) == -1) {
 		fprintf(stderr, "invalid input: %s\n", argv[1]);
 		return 2;
@@ -39,15 +41,17 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	uint8_t pid = lin_pid_addparity(id);
-	uint8_t checksum = lin_chksum(data, pid);
+	uint8_t pid = lin_pid_addparity(id); // add pid parity
+	uint8_t checksum = lin_chksum(data, pid); // compute checksum
 
+	// build a LIN frame
 	LINFrame frame;
 	frame.pid = pid;
 	for (size_t i = 0; i < LIN_MAX_DATA; i++)
 		frame.data[i] = data[i];
 	frame.checksum = checksum;
 
+	// send frame to FIFO pipe
 	if (lin_send_frame(fd, &frame) == -1) {
 		fprintf(stderr, "error sending frame\n");
 		return 3;

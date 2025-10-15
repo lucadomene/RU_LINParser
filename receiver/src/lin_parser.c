@@ -2,11 +2,12 @@
 #include <stdint.h>
 #include "lin.h"
 
-static LINFrameHandler lin_handler = NULL;
+static LINFrameHandler lin_handler = NULL; // callback function for properly parsed frames
 
-static LINErrorHandler lin_errhandler = NULL;
+static LINErrorHandler lin_errhandler = NULL; // callback function for error frames (!NOT IMPLEMENTED!)
 
-void lin_set_handler(LINFrameHandler handler) {
+// respectively, set frame and error handlers
+void lin_set_handler(LINFrameHandler handler) { 
 	lin_handler = handler;
 }
 
@@ -14,13 +15,14 @@ void lin_set_errhandler(LINErrorHandler handler) {
 	lin_errhandler = handler;
 }
 
-
+// check if sync-byte respects expected value
 LINStatus lin_chk_sync(uint8_t sync) {
 	if (sync == LIN_SYNC_BYTE)
 		return LIN_OK;
 	else return LIN_SYNC_ERR;
 }
 
+// add parity to 6-bit pid
 uint8_t lin_pid_addparity(uint8_t pid) {
 	uint8_t id = pid & 0x3F; // mask id with 0b0011111
 	
@@ -33,6 +35,7 @@ uint8_t lin_pid_addparity(uint8_t pid) {
 	return id | (p0 << 6) | (p1 << 7);
 }
 
+// validate pid value
 LINStatus lin_val_pid(uint8_t pid) {
 	uint8_t expected_pid = lin_pid_addparity(pid);
 	
@@ -41,9 +44,10 @@ LINStatus lin_val_pid(uint8_t pid) {
 	else return LIN_PID_ERR;
 }
 
+// compute checksum (can be toggled enhanced or not)
 uint8_t lin_chksum(const uint8_t *data, uint8_t pid) {
 	uint16_t sum = 0; // need for 2 bytes to preserve the carry bit
-	//
+	
 #ifdef LIN_ENHANCED_CHKSUM
 	sum += pid;
 #endif
@@ -57,6 +61,7 @@ uint8_t lin_chksum(const uint8_t *data, uint8_t pid) {
 	return (uint8_t)(~sum); // inverted sum;
 }
 
+// validation of checksum value
 LINStatus lin_val_chksum(const LINFrame *frame) {
 	uint8_t expected_chksum = lin_chksum(frame->data, frame->pid);
 
@@ -65,6 +70,7 @@ LINStatus lin_val_chksum(const LINFrame *frame) {
 	else return LIN_CHKSUM_ERR;
 }
 
+// parse raw data into a LINFrame data structure
 LINStatus lin_parse_frame(const uint8_t *raw, LINFrame *out) {
 	if (raw == NULL || out == NULL) return LIN_FORMAT_ERR;
 

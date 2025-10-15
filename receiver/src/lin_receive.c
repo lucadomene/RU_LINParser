@@ -18,21 +18,22 @@ static void handle_sigint(int sig) {
 
 int main (int argc, char* argv[]) {
 	printf("Setting up custom diagnostic handler...\n");
-	lin_set_router_handler();
+	lin_set_router_handler(); // set routing handle as frame handler
 	printf("Successfully set handler!\n");
 
 	printf("Setting up logger...\n");
-	if (lin_logger_init("lin.log") != 0) {
+	if (lin_logger_init("lin.log") != 0) { // initialize logfile
 		fprintf(stderr, "Error setting up logger!\n");
 		return 1;
 	}
 	printf("Successfully set logger!\n");
 
+	// handle program termination by CTRL+C
 	signal(SIGINT, handle_sigint);
 	signal(SIGTERM, handle_sigint);
 
 	int fd;
-	if ((fd = lin_init_fifo()) == -1)
+	if ((fd = lin_init_fifo()) == -1) // initialize FIFO descriptor
 		return 2;
 
 	uint8_t* raw_frame = (uint8_t*)malloc(2 + LIN_MAX_DATA + 1);
@@ -41,17 +42,17 @@ int main (int argc, char* argv[]) {
 	LINStatus status;
 
 	while (!stop) {
-		if (lin_receive_raw(fd, raw_frame) == -1)
+		if (lin_receive_raw(fd, raw_frame) == -1) // receive raw data from FIFO pipe
 			return 3;
 
-		status = lin_parse_frame(raw_frame, &frame);
+		status = lin_parse_frame(raw_frame, &frame); // parse raw data into a frame
 		if (status != LIN_OK) {
 			printf("Parsing error %d\n", status);
 		}
 	}
 
-	free(raw_frame);
-	close(fd);
+	free(raw_frame); // deallocate buffer for raw data
+	close(fd); // close FIFO pipe
 
 	printf("Exiting...\n");
 

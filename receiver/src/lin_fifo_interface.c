@@ -10,15 +10,16 @@
 
 static const char *FIFO_PATH = "/tmp/lin_fifo";
 
+// initialize FIFO named pipe
 int lin_init_fifo() {
 	if (mkfifo(FIFO_PATH, 0666) != 0) {
-		if (errno != EEXIST) {
+		if (errno != EEXIST) { // may already exist in target filesystem
 			perror("mkfifo");
 			return -1;
 		}
 	}
 
-	int fd = open(FIFO_PATH, O_RDWR);
+	int fd = open(FIFO_PATH, O_RDWR); // set as R/W to keep it open
 	if (fd == -1) {
 		perror("open fifo");
 		return -1;
@@ -26,9 +27,10 @@ int lin_init_fifo() {
 	return fd;
 }
 
+// send a frame to file descriptor
 int lin_send_frame(int fd, LINFrame* frame) {
-	uint8_t pid = lin_pid_addparity(frame->pid);
-	frame->checksum = lin_chksum(frame->data, pid);
+	uint8_t pid = lin_pid_addparity(frame->pid); // compute proper pid
+	frame->checksum = lin_chksum(frame->data, pid); // compute valid checksum
 
 	size_t total_bytes = 2 + LIN_MAX_DATA + 1;
 
@@ -47,6 +49,7 @@ int lin_send_frame(int fd, LINFrame* frame) {
 	return 0;
 }
 
+// receive raw data, no parsing
 int lin_receive_raw(int fd, uint8_t* raw) {
 	size_t total_bytes = 2 + LIN_MAX_DATA + 1;
 	if (read(fd, raw, total_bytes) <= 0) {

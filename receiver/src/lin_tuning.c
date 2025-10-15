@@ -7,6 +7,7 @@
 
 #define LIN_TUNING_MAX_LOG 60
 
+// data structure to hold dummy parameters
 struct CarParams {
 	bool drs;
 	uint8_t suspension_stiff;
@@ -14,6 +15,7 @@ struct CarParams {
 	bool lights;
 };
 
+// dummy parameters
 static struct CarParams car_params = {
 	false,
 	100,
@@ -21,6 +23,7 @@ static struct CarParams car_params = {
 	true
 };
 
+// update car settings according to incoming command and value
 void update_setting(uint8_t setting, uint8_t measure, char* log) {
 	switch (setting) {
 		case DRS:
@@ -44,6 +47,7 @@ void update_setting(uint8_t setting, uint8_t measure, char* log) {
 	}
 }
 
+// tuning handler: receives frame, updates settings and prints log
 void lin_tuning_handler(const LINFrame *frame) {
 	uint8_t setting = frame->data[0];
 	uint8_t measure = frame->data[1];

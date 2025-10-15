@@ -5,8 +5,10 @@
 #define LIN_SYNC_BYTE 0x55
 #define LIN_MAX_DATA 8
 
+// toggle enhanced checksum (which considers the PID along the data)
 #define LIN_ENHANCED_CHKSUM 1
 
+// possible errors when parsing a frame
 typedef enum {
 	LIN_OK,
 	LIN_SYNC_ERR,
@@ -15,6 +17,7 @@ typedef enum {
 	LIN_FORMAT_ERR,
 } LINStatus;
 
+// data structure of a LIN frame
 typedef struct {
 	uint8_t pid;
 	uint8_t data[LIN_MAX_DATA];

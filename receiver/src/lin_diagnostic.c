@@ -18,6 +18,7 @@
 
 #define LIN_DIAG_MAX_LOG 40
 
+// set diagnostic log level
 static void print_diag_level(uint8_t level, char* log) {
 	switch (level) {
 		case LIN_DIAG_STAT:
@@ -37,6 +38,7 @@ static void print_diag_level(uint8_t level, char* log) {
 	}
 }
 
+// print diagnostic log with (dummy) car sensor readings
 static void print_diagnostic(uint8_t category, uint8_t measure, char* log) {
 	switch (category) {
 		case LIN_DIAG_TIRE:
@@ -56,6 +58,7 @@ static void print_diagnostic(uint8_t category, uint8_t measure, char* log) {
 	}
 }
 
+// diagnostic handler: receive frame, print diagnostic log
 void lin_diagnostic_handler(const LINFrame *frame) {
 	uint8_t level = frame->data[0];
 	uint8_t category = frame->data[1];

@@ -18,7 +18,7 @@ int lin_init_fifo() {
 		}
 	}
 
-	int fd = open(FIFO_PATH, O_RDONLY);
+	int fd = open(FIFO_PATH, O_RDWR);
 	if (fd == -1) {
 		perror("open fifo");
 		return -1;
@@ -49,7 +49,7 @@ int lin_send_frame(int fd, LINFrame* frame) {
 
 int lin_receive_raw(int fd, uint8_t* raw) {
 	size_t total_bytes = 2 + LIN_MAX_DATA + 1;
-	if (read(fd, raw, total_bytes) == -1) {
+	if (read(fd, raw, total_bytes) <= 0) {
 		perror("read");
 		return -1;
 	}

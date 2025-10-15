@@ -1,4 +1,4 @@
-TARGET_EXEC := lin_main
+TARGET_EXEC := lin_receiver
 
 CC := gcc
 CFLAGS := -Wall -Wextra -std=c11
@@ -12,7 +12,7 @@ OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
 DEPS := $(OBJS:.o=.d)
 
-INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+INC_DIRS := ../include
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CPPFLAGS := $(INC_FLAGS) -MMD -MP -g
